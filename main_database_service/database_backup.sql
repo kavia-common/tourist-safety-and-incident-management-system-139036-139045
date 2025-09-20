@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict ybKvSalXrLVghnZi2ihw9QC8kQALSe3eFPdpfdtSw7xKHRt6sJpVFyT2RQ3TB9x
+\restrict auiNlK1L6BVr85KTXexfleWCQwe31NzlUGxGH3dvCUnrrXUog0IkpD4I4JS8qgo
 
 -- Dumped from database version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
@@ -28,9 +28,9 @@ CREATE DATABASE myapp WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDE
 
 ALTER DATABASE myapp OWNER TO postgres;
 
-\unrestrict ybKvSalXrLVghnZi2ihw9QC8kQALSe3eFPdpfdtSw7xKHRt6sJpVFyT2RQ3TB9x
+\unrestrict auiNlK1L6BVr85KTXexfleWCQwe31NzlUGxGH3dvCUnrrXUog0IkpD4I4JS8qgo
 \connect myapp
-\restrict ybKvSalXrLVghnZi2ihw9QC8kQALSe3eFPdpfdtSw7xKHRt6sJpVFyT2RQ3TB9x
+\restrict auiNlK1L6BVr85KTXexfleWCQwe31NzlUGxGH3dvCUnrrXUog0IkpD4I4JS8qgo
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -117,7 +117,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.ai_events (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    event_time timestamp with time zone DEFAULT now() NOT NULL,
+    event_time timestamp with time zone DEFAULT now(),
     tourist_id uuid,
     source text NOT NULL,
     model text,
@@ -139,7 +139,7 @@ CREATE TABLE public.alert_logs (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     tourist_id uuid,
     itinerary_id uuid,
-    alert_time timestamp with time zone DEFAULT now() NOT NULL,
+    alert_time timestamp with time zone DEFAULT now(),
     latitude double precision,
     longitude double precision,
     geohash text,
@@ -162,7 +162,7 @@ CREATE TABLE public.dashboard_metrics (
     metric_key text NOT NULL,
     metric_value numeric,
     dimensions jsonb DEFAULT '{}'::jsonb,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -200,9 +200,9 @@ CREATE TABLE public.digital_ids (
     public_key text,
     hash_algorithm text DEFAULT 'SHA256'::text,
     id_hash text NOT NULL,
-    issued_at timestamp with time zone DEFAULT now() NOT NULL,
+    issued_at timestamp with time zone DEFAULT now(),
     revoked_at timestamp with time zone,
-    is_active boolean DEFAULT true NOT NULL
+    is_active boolean DEFAULT true
 );
 
 
@@ -217,7 +217,7 @@ CREATE TABLE public.iot_devices (
     device_id text NOT NULL,
     device_type text,
     owner_tourist_id uuid,
-    registered_at timestamp with time zone DEFAULT now() NOT NULL,
+    registered_at timestamp with time zone DEFAULT now(),
     last_seen timestamp with time zone
 );
 
@@ -232,7 +232,7 @@ CREATE TABLE public.iot_events (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     device_id uuid,
     tourist_id uuid,
-    event_time timestamp with time zone DEFAULT now() NOT NULL,
+    event_time timestamp with time zone DEFAULT now(),
     latitude double precision,
     longitude double precision,
     geohash text,
@@ -260,7 +260,7 @@ CREATE TABLE public.itineraries (
     travel_mode text,
     booking_ref text,
     notes text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now()
 );
 
 
@@ -287,7 +287,7 @@ CREATE TABLE public.safety_scores (
     tourist_id uuid NOT NULL,
     related_alert_id uuid,
     score numeric(5,2) NOT NULL,
-    computed_at timestamp with time zone DEFAULT now() NOT NULL,
+    computed_at timestamp with time zone DEFAULT now(),
     factors jsonb DEFAULT '{}'::jsonb,
     CONSTRAINT safety_scores_score_check CHECK (((score >= (0)::numeric) AND (score <= (100)::numeric)))
 );
@@ -336,8 +336,8 @@ ALTER SEQUENCE public.tourist_names_i18n_id_seq OWNED BY public.tourist_names_i1
 
 CREATE TABLE public.tourists (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
     first_name text NOT NULL,
     last_name text NOT NULL,
     date_of_birth date,
@@ -347,8 +347,8 @@ CREATE TABLE public.tourists (
     phone text,
     email text,
     preferred_language public.language_code DEFAULT 'en'::public.language_code,
-    consent_data_processing boolean DEFAULT true NOT NULL,
-    consent_location_tracking boolean DEFAULT false NOT NULL
+    consent_data_processing boolean DEFAULT true,
+    consent_location_tracking boolean DEFAULT false
 );
 
 
@@ -397,6 +397,9 @@ COPY public.dashboard_metrics (id, metric_date, metric_key, metric_value, dimens
 --
 
 COPY public.digital_ids (id, tourist_id, blockchain_tx_hash, public_key, hash_algorithm, id_hash, issued_at, revoked_at, is_active) FROM stdin;
+aca63adf-f361-4523-aef5-177f08ae56dd	04c8df52-e6f1-47f6-83c8-2a3c7447918e	0xabcde12345fakelight	ALICE_PUB_KEY	SHA256	\\x1a5b2e3f205ca09950ccf1c7acb5daa6d19b3b9a3c4c23f55e317cd0f3632027	2025-09-20 00:48:26.063983+00	\N	t
+c7c92314-5a9e-46e0-b4dd-950fa984b966	80049085-3a42-421e-99e6-f234da317f50	0x98765faketxhash	CARLOS_PUB_KEY	SHA256	\\x2e2a71817258e0433a7e5ffda66341ee93f66e8019c852562d846c46428d113d	2025-09-20 00:48:28.246095+00	\N	t
+1b0261b9-3f5e-4b2b-8ab6-79f7069d353e	0c9b6efd-73b5-4a9f-80ab-c6930771b59e	0x55555faketx	SOFIA_PUB_KEY	SHA256	\\x1a1b102a3190fc46170d4c0dabecda6472187bfb7e1f6e680cbde541d9e74e26	2025-09-20 00:48:30.356299+00	\N	t
 \.
 
 
@@ -429,6 +432,17 @@ COPY public.itineraries (id, tourist_id, start_date, end_date, origin_country, d
 --
 
 COPY public.languages (code, name) FROM stdin;
+en	English
+es	Spanish
+fr	French
+de	German
+zh	Chinese
+hi	Hindi
+ar	Arabic
+ru	Russian
+pt	Portuguese
+ja	Japanese
+ko	Korean
 \.
 
 
@@ -445,6 +459,9 @@ COPY public.safety_scores (id, tourist_id, related_alert_id, score, computed_at,
 --
 
 COPY public.tourist_names_i18n (id, tourist_id, language, full_name) FROM stdin;
+1	04c8df52-e6f1-47f6-83c8-2a3c7447918e	en	Alice Nguyen
+2	80049085-3a42-421e-99e6-f234da317f50	es	Carlos Díaz
+3	0c9b6efd-73b5-4a9f-80ab-c6930771b59e	en	Sofia Khan
 \.
 
 
@@ -453,6 +470,9 @@ COPY public.tourist_names_i18n (id, tourist_id, language, full_name) FROM stdin;
 --
 
 COPY public.tourists (id, created_at, updated_at, first_name, last_name, date_of_birth, country_of_origin, passport_number, national_id, phone, email, preferred_language, consent_data_processing, consent_location_tracking) FROM stdin;
+04c8df52-e6f1-47f6-83c8-2a3c7447918e	2025-09-20 00:48:17.719096+00	2025-09-20 00:48:17.719096+00	Alice	Nguyen	1990-05-12	Vietnam	P12345678	VN-19900512-001	+84-912-345-678	alice.nguyen@example.com	en	t	t
+80049085-3a42-421e-99e6-f234da317f50	2025-09-20 00:48:20.48639+00	2025-09-20 00:48:20.48639+00	Carlos	Diaz	1985-10-03	Spain	XK9876543	ES-19851003-002	+34-600-111-222	carlos.diaz@example.com	es	t	f
+0c9b6efd-73b5-4a9f-80ab-c6930771b59e	2025-09-20 00:48:23.763279+00	2025-09-20 00:48:23.763279+00	Sofia	Khan	1994-03-22	Pakistan	PK4455667	PK-19940322-003	+92-300-555-777	sofia.khan@example.com	en	t	t
 \.
 
 
@@ -467,7 +487,7 @@ SELECT pg_catalog.setval('public.dashboard_metrics_id_seq', 1, false);
 -- Name: tourist_names_i18n_id_seq; Type: SEQUENCE SET; Schema: public; Owner: appuser
 --
 
-SELECT pg_catalog.setval('public.tourist_names_i18n_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tourist_names_i18n_id_seq', 3, true);
 
 
 --
@@ -1018,5 +1038,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES 
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ybKvSalXrLVghnZi2ihw9QC8kQALSe3eFPdpfdtSw7xKHRt6sJpVFyT2RQ3TB9x
+\unrestrict auiNlK1L6BVr85KTXexfleWCQwe31NzlUGxGH3dvCUnrrXUog0IkpD4I4JS8qgo
 
